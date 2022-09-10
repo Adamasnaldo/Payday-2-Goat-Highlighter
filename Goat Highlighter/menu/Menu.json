@@ -1,0 +1,33 @@
+{
+    "menu_id" : "id_goathighlighter_options",
+    "parent_menu_id" : "blt_options",
+    "title" : "goathighlighter_menu_title",
+    "back_callback" : "GoatHighlighter_save",
+    "focus_changed_callback" : "GoatHighlighter_refocus",
+    "items" : [
+        {
+            "type" : "multiple_choice",
+            "id": "id_goathighlighter_select_language",
+            "title" : "goathighlighter_language_title",
+            "description" : "goathighlighter_language_desc",
+            "callback" : "GoatHighlighter_changeLanguage",
+            "items" : [
+            ],
+            "value" : "lang_index",
+            "default_value" : 1
+        },
+        {
+            "type": "divider",
+            "size": 8
+        },
+        {
+            "type" : "toggle",
+            "id"   : "id_GoatHighlighter_active",
+            "title": "goathighlighter_active_button_title",
+            "description" : "goathighlighter_active_button_desc",
+            "callback" : "GoatHighlighter_toggleActive",
+            "value" : "active",
+            "default_value" : false
+        }
+    ]
+}

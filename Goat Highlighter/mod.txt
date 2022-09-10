@@ -1,0 +1,28 @@
+{
+    "name": "Goat Highlighter",
+    "description": "Highlights all the goats on the day 1 of Goat Simulator",
+    "author": "Adamasnaldo",
+    "contact": "nao",
+    "image": "logo.png",
+    "version": "1.0",
+    "color": "115 103 89",
+    "blt_version": 2,
+    "hooks" : [
+        {
+            "hook_id": "lib/managers/menumanager",
+            "script_path": "menu/menu.lua"
+        },
+        {
+            "hook_id": "lib/managers/playermanager",
+            "script_path": "lua/playermanager.lua"
+        }
+    ],
+    "updates": [
+        {
+            "identifier": "goat-highlighter",
+            "host": {
+                "meta": "https://github.com/Adamasnaldo/Payday-2-Goat-Highlighter/releases/latest/download/meta.json"
+            }
+        }
+    ]
+}

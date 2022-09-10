@@ -1,0 +1,11 @@
+{
+    "goathighlighter_menu_title" : "Goat Highlighter",
+    "goathighlighter_active_button_title" : "Activate",
+    "goathighlighter_active_button_desc" : "Activates 'Goat Highlighter' mod",
+
+    "goathighlighter_language_title" : "Language",
+    "goathighlighter_language_desc" : "Change Language",
+
+    "goathighlighter_language_en" : "English",
+    "goathighlighter_language_pt-pt" : "Portuguese"
+}
