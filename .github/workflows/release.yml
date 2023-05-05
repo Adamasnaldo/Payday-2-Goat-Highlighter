@@ -1,48 +1,33 @@
 name: Create new release
+
 on:
-   workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version for the new release (if not given it will get it from 'mod.txt')"
+        required: false
+        type: string
+
 
 env:
     VERSION: ${{ github.event.inputs.version }}
 
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v3
     - name: Archive Mod
       run: |
          zip -r "./GoatHighlighter.zip" "./Goat Highlighter/"
-    - name: Get Mod Version
-      run: |
-         VERSION=$(cat "Goat Highlighter/mod.txt" | grep -E '^[ \t]*"version": "([^"]+)",[ \t]*' | grep -oE '[0-9.]+')
-         echo "Found version: ${VERSION}"
-         echo "VERSION=${VERSION}" >> $GITHUB_ENV
-    - name: Create New Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: v${{ env.VERSION }}
-        release_name: Version ${{ env.VERSION }}
-        draft: false
-        prerelease: false
-        body_path: ./.github/Changelog.md
-    - name: Upload Mod Zip to Release
-      id: upload-release-asset 
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ./GoatHighlighter.zip
-        asset_name: GoatHighlighter.zip
-        asset_content_type: application/zip
     - name: Calculate Hash
       id: hash
       run: |
-        echo "HASH=$(python ./.github/SuperBLT_Hasher.py "./Goat Highlighter/")" >> $GITHUB_ENV
+        HASH=$(find "./Goat Highlighter/" -type f -exec sha256sum -b {} \; | sort -f -k2 | awk '{print $1}' | tr -d '\n' | sha256sum -b | awk '{print $1}') # This calculates the hash for every file, joins them in a single string and then calculates the hash of that
+        echo "HASH=${HASH}" >> $GITHUB_ENV
     - name: Create mod meta file
       id: create_meta_file
       run: |
@@ -56,23 +41,23 @@ jobs:
             }
         ]
         EOM
-    - name: Upload meta file to Release
-      id: upload-meta-asset 
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Get Mod Version
+      if: "${{ env.VERSION == '' }}"
+      run: |
+         VERSION=$(cat "Goat Highlighter/mod.txt" | grep -E '^[ \t]*"version": "([^"]+)",[ \t]*' | grep -oE '[0-9.]+')
+         echo "Found version: ${VERSION}"
+         echo "VERSION=${VERSION}" >> $GITHUB_ENV
+    - name: Create New Release
+      id: create_release
+      uses: softprops/action-gh-release@v1
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ./meta.json
-        asset_name: meta.json
-        asset_content_type: application/json
-    - name: Upload changelog file to Release
-      id: upload-changelog-asset 
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ./.github/Changelog.md
-        asset_name: Changelog.md
-        asset_content_type: text/markdown
+        files: |
+          ./GoatHighlighter.zip
+          ./meta.json
+          ./.github/Changelog.md
+        fail_on_unmatched_files: true
+        name: Version ${{ env.VERSION }}
+        tag_name: v${{ env.VERSION }}
+        draft: false
+        prerelease: false
+        body_path: ./.github/Changelog.md
