@@ -13,6 +13,3 @@ Just go to the Actions tab and run it to create a new release (the name of the v
 
 The action was heavily inspired (basically copied and adjusted a bit) on the Carry Stacker one,  
 https://github.com/enragedpixel/Carry-Stacker-Reloaded
-
-The original code for the hash generation was made by fragtrane,  
-https://github.com/fragtrane/Python-SuperBLT-Hash-Calculator
